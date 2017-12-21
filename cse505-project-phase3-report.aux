@@ -1,0 +1,71 @@
+\relax 
+\@writefile{toc}{\contentsline {section}{\numberline {1}Paper}{1}}
+\@writefile{toc}{\contentsline {paragraph}{\textit  {Solving Distributed Constraint Optimization Problems Using Logic Programming} is a paper wrote by Tiep Le, Tran Cao Son, Enrico Pontelli, William Yeoh from New Mexico State University. In the paper, they explained the method to use logic programming, Answer Set Programming(ASP), in implementing the Distributed Pseudo-tree Optimization Procedure(DPOP) for solving Distributed Constraint Optimization Problems(DCOP). And they provided a few benchmarks to demonstrate the benefit of using logic programming. However, the paper focused on the procedure in modeling ASP, some of my ideas also came from the paper \textit  {A Scalable Method for Multiagent Constraint Optimization} by Adrian Petcu and Boi Faltings to help explain the algorithm.}{1}}
+\@writefile{toc}{\contentsline {section}{\numberline {2}Report}{1}}
+\@writefile{toc}{\contentsline {paragraph}{There are three goals in this report:}{1}}
+\@writefile{toc}{\contentsline {subparagraph}{(1) Explain how to formulate a distributed constraint optimization problem in Clingo's Answer Set Programming.}{1}}
+\@writefile{toc}{\contentsline {subparagraph}{(2) Demonstrate some of the potential problems in using Clingo.}{1}}
+\@writefile{toc}{\contentsline {subparagraph}{(3) Share some thoughts about the paper.}{1}}
+\@writefile{toc}{\contentsline {section}{\numberline {3}Distributed Pseudo-tree Optimization Procedure(DPOP)}{1}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Installiation}{1}}
+\@writefile{toc}{\contentsline {paragraph}{1. The latest clingo can be downloaded from:}{1}}
+\@writefile{toc}{\contentsline {subparagraph}{https://sourceforge.net/projects/potassco/files/clingo/}{1}}
+\@writefile{toc}{\contentsline {paragraph}{2. After installiation, add the root directory of clingo.exe to the path for convenience.}{1}}
+\@writefile{toc}{\contentsline {paragraph}{3. In the root directory, there should be clingo.exe and clingo-python.exe. clingo-python.exe is required for simulating a distributed system. Therefore, Python 2.7 installiation is also required. Clingo requires a different version of Python 2.7, it is recommended to check it in the README of the root directory.}{1}}
+\@writefile{toc}{\contentsline {paragraph}{Here is a link for the Python used in this project:}{2}}
+\@writefile{toc}{\contentsline {subparagraph}{https://www.python.org/ftp/python/2.7.13/python-2.7.13.amd64.msi}{2}}
+\@writefile{toc}{\contentsline {paragraph}{4. It is recommended to add Python 2.7 into the path. Although it is very likely that Python 2.7 will run into problem with Python 3. However, there was no conflict throughout the project. In the worst case, uninstall Python 3.}{2}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Command}{2}}
+\@writefile{toc}{\contentsline {paragraph}{The project will be using the following clingo command:}{2}}
+\@writefile{toc}{\contentsline {subparagraph}{clingo-python [ASP\_FILE] [PYTHON\_CONTROL\_FILE] --outf=3}{2}}
+\@writefile{toc}{\contentsline {paragraph}{For convenience, the project source code has a command commented in each .lp ASP file.}{2}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}Answer Set Programming}{2}}
+\@writefile{toc}{\contentsline {paragraph}{This section will briefly explain the ASP that is used in the project.}{2}}
+\@writefile{toc}{\contentsline {paragraph}{\relax $\@@underline {\hbox {DCOP Translation}}\mathsurround \z@ $\relax }{2}}
+\@writefile{toc}{\contentsline {subparagraph}{The set of variables, which includes current agent's variable and context variable. variable is a string constant passed by the controller, if there are n variables, the controller will ground this fact n times with different variable each time.}{2}}
+\@writefile{toc}{\contentsline {subparagraph}{The set of domains, which represents the values that a specific variable can be assigned. Both variable and value are string constants, this fact will be grounded multiple times to represent the whole domain.}{2}}
+\@writefile{toc}{\contentsline {subparagraph}{The first line means for each variable Variable, given a list of possible values Value from the domain, only assign 1 value to Variable. The second line means a variable assignment is also an assignment, this represents inheritance.}{3}}
+\@writefile{toc}{\contentsline {subparagraph}{Utility will be the sum of values that are derived from the given assignment. 1 is an example utility and the right hand side of the condition describes the constraint.}{3}}
+\@writefile{toc}{\contentsline {paragraph}{\relax $\@@underline {\hbox {Subprograms}}\mathsurround \z@ $\relax }{3}}
+\@writefile{toc}{\contentsline {subparagraph}{Because the project will have a Python controller running ASP, the controller will decide what has to be grounded. \#program is used to divide the program into subprograms so that the controller only use ASP that is in the scope of the subprogram to ground. program\_name is used to identify the program and arguments are the values passed from the controller. Example:}{3}}
+\@writefile{toc}{\contentsline {paragraph}{\relax $\@@underline {\hbox {External Grounding}}\mathsurround \z@ $\relax }{3}}
+\@writefile{toc}{\contentsline {subparagraph}{External grounding is used when some facts are sometimes true and sometimes false. Example:}{3}}
+\@writefile{toc}{\contentsline {subparagraph}{Notice that Date is actually a variable, and today has a condition date(Date), which is grounded before. It is required because there are infinite possible dates for today, and Date could be anything like number and name. The program needs to know the domain of a fact that could be true or false.}{3}}
+\@writefile{toc}{\contentsline {paragraph}{\relax $\@@underline {\hbox {Show}}\mathsurround \z@ $\relax }{4}}
+\@writefile{toc}{\contentsline {subparagraph}{ASP will return a very large answer set when the domains and variables are very large. \#show is used to filter answers that are not needed. For example, only the assignments are wanted:}{4}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.4}Distributed System}{4}}
+\@writefile{toc}{\contentsline {paragraph}{This section will explain how this project can be extended to distributed programming.}{4}}
+\@writefile{toc}{\contentsline {paragraph}{\relax $\@@underline {\hbox {Assumption}}\mathsurround \z@ $\relax }{4}}
+\@writefile{toc}{\contentsline {subparagraph}{Although there are many different distributed database designs that can optimize this procedure. The idea is that the main node will communicate with all relevant servers as part of Distributed Depth-First Search(DFS). The servers will store data and/or receive data from the main node and/or other servers. The servers will then compute the UTILITY message and send it to the target server. When the main node as the root finalized the optimal assignment, it can inform other servers about the decision by DFS for VALUE propagation.}{4}}
+\@writefile{toc}{\contentsline {paragraph}{\relax $\@@underline {\hbox {Server}}\mathsurround \z@ $\relax }{4}}
+\@writefile{toc}{\contentsline {subparagraph}{Initially, each server will receive the job request and the relevant data in JSON. Example:}{4}}
+\@writefile{toc}{\contentsline {subparagraph}{The server will create a process locally to run clingo-python.exe, which also run a Python controller. The server will first create the empty UTILITY message table with all dimensions represented. The server will store the output temporarily just to pass it to the next process that finds all the possible assignments and utility given the context assignments. The process will only output the assignment that has the largest utility for each context assignments. When the server computed the UTILITY message, the message will be sent to the target server.}{4}}
+\@writefile{toc}{\contentsline {paragraph}{\relax $\@@underline {\hbox {Data Type}}\mathsurround \z@ $\relax }{5}}
+\@writefile{toc}{\contentsline {subparagraph}{The JSON data are made up of strings and integers. As a result, variables and values are represented by atoms and only the utilities are represented by number. Although variables can also be represented by numbers, this project will stick with atoms.}{5}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.5}Python Controller}{5}}
+\@writefile{toc}{\contentsline {paragraph}{\relax $\@@underline {\hbox {clingo-python API}}\mathsurround \z@ $\relax }{5}}
+\@writefile{toc}{\contentsline {subparagraph}{clingo-python has a few API calls that could help grounding ASP programs. However, the API is relatively small and there are many limitations. The general limitation is anything that is grounded can't undo, unless \#external is used. Although \#program is a feature, it actually mean subprogram, they are additional program calls on top of the base program.}{5}}
+\@writefile{toc}{\contentsline {paragraph}{\relax $\@@underline {\hbox {Ground Method}}\mathsurround \z@ $\relax }{5}}
+\@writefile{toc}{\contentsline {subparagraph}{The ground method is the basic method for grounding a program. The method accepts a list of a tuple that has program name and argument list. However, it is tested that the method will only accept one tuple. Therefore, grounding multiple times is recommended. Program name refers to the program name for \#program, the default base program is named 'base '. In the argument list, both string and number are accepted. But the number of arguments must match the arity in \#program definition. The arguments will be represented by macro constants in the program, their names also depend on \#program definition.}{5}}
+\@writefile{toc}{\contentsline {paragraph}{\relax $\@@underline {\hbox {External Methods}}\mathsurround \z@ $\relax }{5}}
+\@writefile{toc}{\contentsline {subparagraph}{assign\_external temporarily assign truth value to a \#external statement. Function() will construct a Symbol which could have a name and an argument list. In the argument list, there can be String(...), Number(...), or more Symbols. A Symbol can be viewed as a fact that has a name and a list of arguments in the parenthesis. In addition, there is another method named release\_external(...). It takes similar arguments, but it is to make the program never consider the Symbol is true or false.}{6}}
+\@writefile{toc}{\contentsline {paragraph}{\relax $\@@underline {\hbox {Add Method}}\mathsurround \z@ $\relax }{6}}
+\@writefile{toc}{\contentsline {subparagraph}{The add(...) method is a powerful method that allows programmer to add a subprogram at runtime. It is similar to creating a subprogram in the ASP file. Compare to the other two methods, add(...) can actually parse the non-ground program. That means add(...) can add integrity constraints.}{6}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.6}Project Files}{6}}
+\@writefile{toc}{\contentsline {paragraph}{\relax $\@@underline {\hbox {Git Repository}}\mathsurround \z@ $\relax }{6}}
+\@writefile{toc}{\contentsline {paragraph}{https://github.com/LumingWu/DPOP-implementation}{6}}
+\@writefile{toc}{\contentsline {paragraph}{\relax $\@@underline {\hbox {File Description}}\mathsurround \z@ $\relax }{6}}
+\@writefile{toc}{\contentsline {paragraph}{stage3\_utility\_message.lp: An ASP file that computes the dimensionality of the UTILITY message.}{6}}
+\@writefile{toc}{\contentsline {paragraph}{stage3\_utility\_message\_controller.lp: A Python controller for the file stage3\_utility\_message.lp. It passes the JSON data into the ASP and it receives the UTILITY message table.}{6}}
+\@writefile{toc}{\contentsline {paragraph}{stage3\_optimization.lp: An ASP file that tries to find the optimal assignment and utility for every UTILITY message combination.}{6}}
+\@writefile{toc}{\contentsline {paragraph}{stage3\_optimization\_controller.py: A Python controller for the file stage3\_optimization.lp. It passes the JSON data and the UTILITY message table into the ASP and it will select the optimal answer set to output.}{6}}
+\@writefile{toc}{\contentsline {section}{\numberline {4}Possible Clingo Problems}{6}}
+\@writefile{toc}{\contentsline {paragraph}{Clingo is a powerful ASP tool, but it is not flawless.}{6}}
+\@writefile{toc}{\contentsline {paragraph}{\relax $\@@underline {\hbox {Python Version}}\mathsurround \z@ $\relax }{7}}
+\@writefile{toc}{\contentsline {subparagraph}{clingo-python is still using a specific version of Python 2.7. It creates conflict with Python 3, it becomes a problem when servers are running in Python 3. Python 2 is getting less official support, the problem can only get worse.}{7}}
+\@writefile{toc}{\contentsline {paragraph}{\relax $\@@underline {\hbox {Optimization}}\mathsurround \z@ $\relax }{7}}
+\@writefile{toc}{\contentsline {subparagraph}{Although Clingo has multiple ways to ground a program, it is far from enough for programmers to customize and decide a more optimal communication between controller and ASP. In addition, the communication between controller and ASP is in a string or a structure that is not as solid as JSON. It was expensive to have the controller to parse an ASP output or parse the input into an ASP structure.}{7}}
+\@writefile{toc}{\contentsline {paragraph}{\relax $\@@underline {\hbox {Filter}}\mathsurround \z@ $\relax }{7}}
+\@writefile{toc}{\contentsline {subparagraph}{Clingo does not support program specific answer display. \#show statements are shared among all programs, there is no customization for answer set output.}{7}}
+\@writefile{toc}{\contentsline {section}{\numberline {5}Final Thought}{7}}
+\@writefile{toc}{\contentsline {paragraph}{Although this report is about how to translate DPOP to Clingo, it seems Clingo is not an ideal tool for the task. In reality, decimal numbers are more likely to be considered as utility of a constraint. And in the field of machine learning, probability also require the support of decimal number. About the paper, the paper gave a very general idea on the implementation. Through working on the project, it seems there are problems like constraint formulation, distributed database design, and data structure. Nevertheless, the use of dynamic programming in solving problems like DCOP was definitely a good direction.}{7}}

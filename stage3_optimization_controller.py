@@ -62,7 +62,7 @@ Given a set of target and context variable assignment, find optimal.
 """
 def optimization(prg, assignments, constraints):
     # only want one optimal variable assignment for each combination. change to 0 to see other alternatives
-    prg.configuration.solve.models = 1
+    prg.configuration.solve.models = 0
     # parse the assignments to be groundable 
     assignments = parsed_assignments(assignments)
     # ground the optimization program
@@ -79,8 +79,9 @@ def optimization(prg, assignments, constraints):
         with prg.solve(yield_=True) as handle:
             for model in handle:
                 optimal_symbols.append(model.symbols(shown=True))
-        for assignment in assignments:
-            prg.release_external(Function("assignment", assignment))
+        for variable, value in assignment:
+            # prg.release_external would remove the same assignment from following answer set.
+            prg.assign_external(Function("assignment", [String(variable), String(value)]), False)
         optimized_results.append(optimal_symbols)
     return optimized_results
 
@@ -148,12 +149,20 @@ def report_optimization(optimized_results):
         print(i + 1)
         print("")
         optimized_result_set = optimized_results[i]
+        optimal_index = 0
         for j in range(0, len(optimized_result_set)):
             print("")
-            print("Optimal Answer Set Rank #"),
+            print("Answer Set #"),
             print(j + 1)
-            print(optimized_results[i][j])
+            print(optimized_result_set[j])
             print("")
+            if optimized_result_set[j][-1].arguments[0].number > optimized_result_set[optimal_index][-1].arguments[0].number:
+                optimal_index = j
+        print("")
+        print("Optimal Answer Set is #"),
+        print(optimal_index + 1)
+        print(optimized_result_set[optimal_index])
+        print("")
     print("==============")
     print("|Optimization|")
     print("==============")
@@ -182,33 +191,96 @@ utility(Utility) :- Utility = #sum {
 Utility Message Cell # 1
 
 
-Optimal Answer Set Rank # 1
+Answer Set # 1
+[assignment("var1","rice"), assignment("var2","chicken"), assignment("var3","java"), assignment("var4","game"), variable_assignment("var1","rice"), variable_assignment("var2","chicken"), utility(5)]
+
+
+Answer Set # 2
+[assignment("var1","noodle"), assignment("var2","chicken"), assignment("var3","java"), assignment("var4","game"), variable_assignment("var1","noodle"), variable_assignment("var2","chicken"), utility(-7)]
+
+
+Answer Set # 3
+[assignment("var1","noodle"), assignment("var2","beef"), assignment("var3","java"), assignment("var4","game"), variable_assignment("var1","noodle"), variable_assignment("var2","beef"), utility(-2)]
+
+
+Answer Set # 4
+[assignment("var1","rice"), assignment("var2","beef"), assignment("var3","java"), assignment("var4","game"), variable_assignment("var1","rice"), variable_assignment("var2","beef"), utility(0)]
+
+
+Optimal Answer Set is # 1
 [assignment("var1","rice"), assignment("var2","chicken"), assignment("var3","java"), assignment("var4","game"), variable_assignment("var1","rice"), variable_assignment("var2","chicken"), utility(5)]
 
 
 Utility Message Cell # 2
 
 
-Optimal Answer Set Rank # 1
-[assignment("var1","rice"), assignment("var2","chicken"), assignment("var3","java"), assignment("var3","c++"), assignment("var4","game"), variable_assignment("var1","rice"), variable_assignment("var2","chicken"), utility(-5)]
+Answer Set # 1
+[assignment("var1","rice"), assignment("var2","chicken"), assignment("var3","c++"), assignment("var4","game"), variable_assignment("var1","rice"), variable_assignment("var2","chicken"), utility(0)]
+
+
+Answer Set # 2
+[assignment("var1","rice"), assignment("var2","beef"), assignment("var3","c++"), assignment("var4","game"), variable_assignment("var1","rice"), variable_assignment("var2","beef"), utility(-10)]
+
+
+Answer Set # 3
+[assignment("var1","noodle"), assignment("var2","beef"), assignment("var3","c++"), assignment("var4","game"), variable_assignment("var1","noodle"), variable_assignment("var2","beef"), utility(5)]
+
+
+Answer Set # 4
+[assignment("var1","noodle"), assignment("var2","chicken"), assignment("var3","c++"), assignment("var4","game"), variable_assignment("var1","noodle"), variable_assignment("var2","chicken"), utility(5)]
+
+
+Optimal Answer Set is # 3
+[assignment("var1","noodle"), assignment("var2","beef"), assignment("var3","c++"), assignment("var4","game"), variable_assignment("var1","noodle"), variable_assignment("var2","beef"), utility(5)]
 
 
 Utility Message Cell # 3
 
 
-Optimal Answer Set Rank # 1
-[assignment("var1","rice"), assignment("var2","chicken"), assignment("var3","java"), assignment("var3","c++"), assignment("var4","server"), assignment("var4","game"), variable_assignment("var1","rice"), variable_assignment("var2","chicken"), utility(2)]
+Answer Set # 1
+[assignment("var1","rice"), assignment("var2","chicken"), assignment("var3","java"), assignment("var4","server"), variable_assignment("var1","rice"), variable_assignment("var2","chicken"), utility(17)]
+
+
+Answer Set # 2
+[assignment("var1","noodle"), assignment("var2","chicken"), assignment("var3","java"), assignment("var4","server"), variable_assignment("var1","noodle"), variable_assignment("var2","chicken"), utility(5)]
+
+
+Answer Set # 3
+[assignment("var1","noodle"), assignment("var2","beef"), assignment("var3","java"), assignment("var4","server"), variable_assignment("var1","noodle"), variable_assignment("var2","beef"), utility(-2)]
+
+
+Answer Set # 4
+[assignment("var1","rice"), assignment("var2","beef"), assignment("var3","java"), assignment("var4","server"), variable_assignment("var1","rice"), variable_assignment("var2","beef"), utility(0)]
+
+
+Optimal Answer Set is # 1
+[assignment("var1","rice"), assignment("var2","chicken"), assignment("var3","java"), assignment("var4","server"), variable_assignment("var1","rice"), variable_assignment("var2","chicken"), utility(17)]
 
 
 Utility Message Cell # 4
 
 
-Optimal Answer Set Rank # 1
-[assignment("var1","rice"), assignment("var2","chicken"), assignment("var3","java"), assignment("var3","c++"), assignment("var4","server"), assignment("var4","game"), variable_assignment("var1","rice"), variable_assignment("var2","chicken"), utility(2)]
+Answer Set # 1
+[assignment("var1","rice"), assignment("var2","chicken"), assignment("var3","c++"), assignment("var4","server"), variable_assignment("var1","rice"), variable_assignment("var2","chicken"), utility(0)]
+
+
+Answer Set # 2
+[assignment("var1","rice"), assignment("var2","beef"), assignment("var3","c++"), assignment("var4","server"), variable_assignment("var1","rice"), variable_assignment("var2","beef"), utility(-10)]
+
+
+Answer Set # 3
+[assignment("var1","noodle"), assignment("var2","beef"), assignment("var3","c++"), assignment("var4","server"), variable_assignment("var1","noodle"), variable_assignment("var2","beef"), utility(0)]
+
+
+Answer Set # 4
+[assignment("var1","noodle"), assignment("var2","chicken"), assignment("var3","c++"), assignment("var4","server"), variable_assignment("var1","noodle"), variable_assignment("var2","chicken"), utility(0)]
+
+
+Optimal Answer Set is # 1
+[assignment("var1","rice"), assignment("var2","chicken"), assignment("var3","c++"), assignment("var4","server"), variable_assignment("var1","rice"), variable_assignment("var2","chicken"), utility(0)]
 
 ==============
 |Optimization|
 ==============
-
 """
 #end.

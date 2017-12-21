@@ -13,13 +13,13 @@ domains(variable, value).
 #external assignment(Variable, Value) : domains(Variable, Value).
 
 % assign each variable once.
-variable_assignment(Variable, Value) : domains(Variable, Value) :- variables(Variable).
+1 {variable_assignment(Variable, Value) : domains(Variable, Value)} 1 :- variables(Variable).
 
 % variable assignment is also assignment.
 assignment(Variable, Value) :- variable_assignment(Variable, Value).
 
-% optimize on each answer set based on utility.
-% #maximize {Utility@: utility(Utility)}.
+% optimize on each answer set based on utility. This is not working
+% #maximize {Utility : utility(Utility)}.
 
 #show assignment/2.
 #show variable_assignment/2.
